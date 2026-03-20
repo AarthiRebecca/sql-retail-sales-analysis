@@ -74,3 +74,7 @@ Analyzed retail sales data using **SQL** and built an interactive **Power BI das
 ## Author
 
 **Aarthi Rebecca**   
+
+Master of Management – Business Data Analytics
+
+University of Windsor
