@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="superstore.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="1880"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="superstore" custom_title="0" dock_id="1" table="4,10:mainsuperstore"/><dock_state state="000000ff00000000fd00000001000000020000000000000000fc0100000001fb000000160064006f0063006b00420072006f00770073006500310100000000ffffffff0000011800ffffff000000000000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="superstore" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="300"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">/*
+
+Retail Sales Analysis
+
+---------------------
+
+SQL-based analysis of sales data to measure performance, track trends,
+
+and identify key drivers of revenue and profit.
+
+
+
+Author: Aarthi Rebecca
+
+*/
+
+
+
+CREATE TABLE orders (
+    order_id TEXT,
+    order_date TEXT,
+    ship_date TEXT,
+    customer TEXT,
+    manufactory TEXT,
+    product_name TEXT,
+    segment TEXT,
+    category TEXT,
+    subcategory TEXT,
+    region TEXT,
+    zip TEXT,
+    city TEXT,
+    state TEXT,
+    country TEXT,
+    discount REAL,
+    profit REAL,
+    quantity INTEGER,
+    sales REAL,
+    profit_margin REAL
+);
+
+
+-- Check total number of records
+
+SELECT COUNT(*) AS total_orders FROM orders;
+
+
+
+-- Preview dataset
+
+SELECT * FROM orders LIMIT 10;
+
+-- Calculate total revenue and total profit
+
+SELECT SUM(sales) AS total_sales, SUM(profit) AS total_profit FROM orders;
+
+-- Identify top 10 customers by total revenue
+SELECT customer, SUM(sales) AS total_sales
+FROM orders
+GROUP BY customer
+ORDER BY total_sales DESC
+LIMIT 10;
+
+-- Analyze monthly revenue trend over time
+SELECT strftime('%Y-%m', order_date) AS month, SUM(sales) AS monthly_sales
+FROM orders
+GROUP BY month
+ORDER BY month;
+
+				
+-- Compare average order value across regions
+SELECT region, AVG(sales) AS avg_order_value
+FROM orders
+GROUP BY region
+ORDER BY avg_order_value DESC;
+
+-- Identify top 10 revenue-generating products
+SELECT product_name, SUM(sales) AS total_sales
+FROM orders
+GROUP BY product_name
+ORDER BY total_sales DESC
+LIMIT 10;
+
+-- Evaluate profitability across product categories
+SELECT category, SUM(profit) AS total_profit
+FROM orders
+GROUP BY category
+ORDER BY total_profit DESC;
+
+-- Analyze how discounts affect average profit
+SELECT discount, AVG(profit) AS avg_profit
+FROM orders
+GROUP BY discount
+ORDER BY discount;
+
+-- Compare sales and profit across customer segments
+SELECT segment, SUM(sales) AS total_sales, SUM(profit) AS total_profit
+FROM orders
+GROUP BY segment
+ORDER BY total_sales DESC;
+
+-- Rank regions based on total sales
+SELECT region, SUM(sales) AS total_sales
+FROM orders
+GROUP BY region
+ORDER BY total_sales DESC;
+
+-- Create summary view for regional performance
+CREATE VIEW region_summary AS
+SELECT region, SUM(sales) AS total_sales, SUM(profit) AS total_profit, AVG(sales) AS avg_order_value
+FROM orders
+GROUP BY region;
+
+
+-- Create summary view for category performance
+CREATE VIEW category_summary AS
+SELECT category, SUM(sales) AS total_sales, SUM(profit) AS total_profit, AVG(sales) AS avg_order_value
+FROM orders
+GROUP BY category;
+
+-- Retrieve region-level insights
+SELECT * FROM region_summary;
+
+
+
+-- Retrieve category-level insights
+SELECT * FROM category_summary;
+
+-- Compare profit across different discount levels
+SELECT 
+    CASE 
+        WHEN discount = 0 THEN 'No Discount'
+        WHEN discount &lt; 0.2 THEN 'Low Discount'
+        ELSE 'High Discount'
+    END AS discount_level,
+    AVG(profit) AS avg_profit
+FROM orders
+GROUP BY discount_level;
+
+-- Identify products contributing to losses
+SELECT 
+    product_name,
+    SUM(profit) AS total_profit
+FROM orders
+GROUP BY product_name
+HAVING total_profit &lt; 0
+ORDER BY total_profit;
+
+-- Identify customers with highest total spending
+SELECT 
+    customer,
+    SUM(sales) AS total_spent
+FROM orders
+GROUP BY customer
+ORDER BY total_spent DESC
+LIMIT 10;
+</sql><current_tab id="0"/></tab_sql></sqlb_project>
